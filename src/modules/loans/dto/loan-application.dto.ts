@@ -1,7 +1,7 @@
 import { IsNumber, IsString } from 'class-validator'
 import { ILoanApplication } from '../interfaces/loan-application.interface'
 
-export class LoanApplication implements ILoanApplication {
+export class LoanApplicationDto implements ILoanApplication {
   @IsNumber()
   amortizationType: number
 
