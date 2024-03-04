@@ -3,6 +3,7 @@ import { Injectable } from '@nestjs/common'
 import { lastValueFrom } from 'rxjs'
 import { ILoanApplicationResponse } from './interfaces/loan-application-response.interface'
 import { ILoanApplication } from './interfaces/loan-application.interface'
+import { IRepayment } from './interfaces/repayment.interface'
 
 @Injectable()
 export class LoansService {
@@ -18,6 +19,25 @@ export class LoansService {
         this.httpService.post<ILoanApplicationResponse>(
           `${this.baseURL}/loans`,
           application,
+        ),
+      )
+
+      return { status: 'ok', errors: [] }
+    } catch (error) {
+      return {
+        status: 'error',
+        errors: error.response.data.errors,
+        statusCode: error.response.data.httpStatusCode,
+      }
+    }
+  }
+
+  async createRepayment(loanId: number, repayment: IRepayment) {
+    try {
+      await lastValueFrom(
+        this.httpService.post(
+          `${this.baseURL}/loans/${loanId}/transactions?command=repayment`,
+          repayment,
         ),
       )
 

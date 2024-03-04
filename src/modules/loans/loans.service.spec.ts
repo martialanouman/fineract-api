@@ -3,6 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing'
 import { type AxiosResponse } from 'axios'
 import { of, throwError } from 'rxjs'
 import { type ILoanApplication } from './interfaces/loan-application.interface'
+import { IRepayment } from './interfaces/repayment.interface'
 import { LoansService } from './loans.service'
 
 vi.mock('@nestjs/axios')
@@ -31,7 +32,7 @@ describe('LoansService', () => {
     expect(service).toBeDefined()
   })
 
-  describe('create a new load application', async () => {
+  describe('create a new loan application', async () => {
     it('should create a new loan application', async () => {
       const loanApplication: ILoanApplication = {
         amortizationType: 1,
@@ -109,5 +110,73 @@ describe('LoansService', () => {
     expect(result.status).toBe('error')
     expect(result.errors.length).toBe(1)
     expect(result.statusCode).toBe(statusCode)
+  })
+
+  describe('create a repayment', () => {
+    it('should create a new repayment', async () => {
+      const repayment: IRepayment = {
+        transactionDate: '04-03-2024',
+        transactionAmount: 1000,
+        externalId: '',
+        paymentTypeId: '',
+        note: '',
+        dateFormat: 'dd-MM-yyyy',
+        locale: 'en',
+      }
+
+      const loanId = 1
+
+      const url = `https://localhost:8443/fineract-provider/api/v1/loans/${loanId}/transactions?command=repayment`
+
+      vi.mocked(httpService.post).mockReturnValueOnce(
+        of({
+          status: 200,
+          data: { transactionId: 1 },
+        } as AxiosResponse),
+      )
+
+      const result = await service.createRepayment(1, repayment)
+
+      expect(result.status).toBe('ok')
+      expect(result.errors.length).toBe(0)
+
+      expect(httpService.post).toHaveBeenCalledOnce()
+      expect(httpService.post).toHaveBeenCalledWith(url, repayment)
+    })
+
+    it('should return an error message when the repayment fails', async () => {
+      const badRepayment = {} as IRepayment
+
+      const errorMessage = 'Invalid repayment'
+      const statusCode = 400
+
+      vi.mocked(httpService.post).mockReturnValueOnce(
+        throwError(() => ({
+          response: {
+            status: statusCode,
+            data: {
+              httpStatusCode: statusCode,
+              developerMessage: errorMessage,
+              defaultUserMessage: errorMessage,
+              errors: [
+                {
+                  developerMessage: 'Invalid repayment',
+                  defaultUserMessage: 'Invalid repayment',
+                  userMessageGlobalisationCode: 'error.msg.invalid.repayment',
+                  parameterName: 'id',
+                  args: [],
+                },
+              ],
+            },
+          },
+        })),
+      )
+
+      const result = await service.createRepayment(1, badRepayment)
+
+      expect(result.status).toBe('error')
+      expect(result.errors.length).toBe(1)
+      expect(result.statusCode).toBe(statusCode)
+    })
   })
 })
