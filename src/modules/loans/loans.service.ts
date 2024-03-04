@@ -21,11 +21,13 @@ export class LoansService {
 
       return { status: 'ok', errors: [] }
     } catch (error) {
-      return {
-        status: 'error',
-        errors: error.response.data.errors,
-        statusCode: error.response.data.httpStatusCode,
-      }
+      throw new Error(error.message, {
+        cause: {
+          status: 'error',
+          errors: error.response.data.errors,
+          statusCode: error.response.data.httpStatusCode,
+        },
+      })
     }
   }
 
@@ -43,11 +45,13 @@ export class LoansService {
 
       return { status: 'ok', errors: [] }
     } catch (error) {
-      return {
-        status: 'error',
-        errors: error.response.data.errors,
-        statusCode: error.response.data.httpStatusCode,
-      }
+      throw new Error(error.message, {
+        cause: {
+          status: 'error',
+          errors: error.response.data.errors,
+          statusCode: error.response.data.httpStatusCode,
+        },
+      })
     }
   }
 }

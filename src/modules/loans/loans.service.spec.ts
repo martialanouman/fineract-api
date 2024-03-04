@@ -2,6 +2,7 @@ import { HttpService } from '@nestjs/axios'
 import { Test, TestingModule } from '@nestjs/testing'
 import { type AxiosResponse } from 'axios'
 import { of, throwError } from 'rxjs'
+import { IFineractResponse } from './interfaces/fineract-response.interface'
 import { type ILoanApplication } from './interfaces/loan-application.interface'
 import { IRepayment } from './interfaces/repayment.interface'
 import { LoansService } from './loans.service'
@@ -105,11 +106,18 @@ describe('LoansService', () => {
       })),
     )
 
-    const result = await service.createLoanApplication(badLoanApplication)
+    let result: Error
+    await service
+      .createLoanApplication(badLoanApplication)
+      .catch((error) => (result = error))
 
-    expect(result.status).toBe('error')
-    expect(result.errors.length).toBe(1)
-    expect(result.statusCode).toBe(statusCode)
+    expect(result).toBeInstanceOf(Error)
+
+    const cause = result.cause as IFineractResponse
+
+    expect(cause.status).toBe('error')
+    expect(cause.errors.length).toBe(1)
+    expect(cause.statusCode).toBe(statusCode)
   })
 
   describe('create a repayment', () => {
@@ -172,11 +180,16 @@ describe('LoansService', () => {
         })),
       )
 
-      const result = await service.createRepayment(1, badRepayment)
+      let result: Error
+      await service
+        .createRepayment(1, badRepayment)
+        .catch((error) => (result = error))
 
-      expect(result.status).toBe('error')
-      expect(result.errors.length).toBe(1)
-      expect(result.statusCode).toBe(statusCode)
+      const cause = result.cause as IFineractResponse
+
+      expect(cause.status).toBe('error')
+      expect(cause.errors.length).toBe(1)
+      expect(cause.statusCode).toBe(statusCode)
     })
   })
 })
