@@ -1,12 +1,19 @@
-import { Controller } from '@nestjs/common'
+import { Body, Controller, HttpCode, Post } from '@nestjs/common'
 import { LoanApplicationDto } from './dto/loan-application.dto'
+import { RepaymentDto } from './dto/repayment.dto'
 import { LoansService } from './loans.service'
 
 @Controller('loans')
 export class LoansController {
   constructor(private service: LoansService) {}
 
-  createLoanApplication(data: LoanApplicationDto) {
+  @Post()
+  @HttpCode(201)
+  createLoanApplication(@Body() data: LoanApplicationDto) {
     return this.service.createLoanApplication(data).catch((error) => error)
+  }
+
+  createRepayment(loanId: number, data: RepaymentDto) {
+    return this.service.createRepayment(loanId, data).catch((error) => error)
   }
 }

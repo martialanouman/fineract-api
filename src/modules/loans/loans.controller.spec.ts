@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { LoanApplicationDto } from './dto/loan-application.dto'
+import { RepaymentDto } from './dto/repayment.dto'
 import { IFineractError } from './interfaces/fineract-error.interface'
 import { LoansController } from './loans.controller'
 import { LoansService } from './loans.service'
@@ -86,6 +87,68 @@ describe('LoansController', () => {
       vi.mocked(service).createLoanApplication.mockRejectedValueOnce(response)
 
       const result = await controller.createLoanApplication(loanApplication)
+
+      expect(result).toStrictEqual(response)
+    })
+  })
+
+  describe('create repayment', () => {
+    it('should create a new repayment', async () => {
+      const repayment: RepaymentDto = {
+        dateFormat: 'dd-MM-yyyy',
+        locale: 'en',
+        transactionAmount: 100,
+        externalId: '1',
+        note: 'Repayment',
+        paymentTypeId: '',
+        transactionDate: '01-01-2021',
+      }
+
+      const loanId = 1
+      const response = { status: 'ok', errors: [] }
+
+      vi.mocked(service).createRepayment.mockResolvedValue({
+        status: 'ok',
+        errors: [],
+      })
+
+      const result = await controller.createRepayment(loanId, repayment)
+
+      expect(result).toStrictEqual(response)
+      expect(service.createRepayment).toHaveBeenCalledWith(loanId, repayment)
+    })
+
+    it('should return an error if the repayment fails', async () => {
+      const badRepayment = {} as RepaymentDto
+
+      const loanId = 1
+
+      const errors: IFineractError = {
+        defaultUserMessage: 'Failed to create repayment',
+        developerMessage: 'Failed to create repayment',
+        userMessageGlobalisationCode:
+          'error.msg.loan.with.externalId.already.used',
+        httpStatusCode: '400',
+        errors: [
+          {
+            args: [],
+            developerMessage: 'Failed to create repayment',
+            defaultUserMessage: 'Failed to create repayment',
+            parameterName: 'id',
+            userMessageGlobalisationCode:
+              'error.msg.loan.with.externalId.already.used',
+          },
+        ],
+      }
+
+      const response = {
+        status: 'error',
+        errors,
+      }
+
+      vi.mocked(service).createRepayment.mockRejectedValueOnce(response)
+
+      const result = await controller.createRepayment(loanId, badRepayment)
 
       expect(result).toStrictEqual(response)
     })
