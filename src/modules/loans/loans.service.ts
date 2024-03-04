@@ -1,7 +1,7 @@
 import { HttpService } from '@nestjs/axios'
 import { Injectable } from '@nestjs/common'
 import { lastValueFrom } from 'rxjs'
-import { ILoanApplicationResponse } from './interfaces/loan-application-response.interface'
+import { IFineractResponse } from './interfaces/fineract-response.interface'
 import { ILoanApplication } from './interfaces/loan-application.interface'
 import { IRepayment } from './interfaces/repayment.interface'
 
@@ -13,13 +13,10 @@ export class LoansService {
 
   async createLoanApplication(
     application: ILoanApplication,
-  ): Promise<ILoanApplicationResponse> {
+  ): Promise<IFineractResponse> {
     try {
       await lastValueFrom(
-        this.httpService.post<ILoanApplicationResponse>(
-          `${this.baseURL}/loans`,
-          application,
-        ),
+        this.httpService.post(`${this.baseURL}/loans`, application),
       )
 
       return { status: 'ok', errors: [] }
@@ -32,7 +29,10 @@ export class LoansService {
     }
   }
 
-  async createRepayment(loanId: number, repayment: IRepayment) {
+  async createRepayment(
+    loanId: number,
+    repayment: IRepayment,
+  ): Promise<IFineractResponse> {
     try {
       await lastValueFrom(
         this.httpService.post(

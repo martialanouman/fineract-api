@@ -6,7 +6,7 @@ export interface IErrorDetail {
   args: any[]
 }
 
-export interface ILoanApplicationError {
+export interface IFineractError {
   developerMessage: string
   httpStatusCode: string
   defaultUserMessage: string
