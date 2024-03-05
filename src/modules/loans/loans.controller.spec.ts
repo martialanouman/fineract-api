@@ -62,7 +62,7 @@ describe('LoansController', () => {
         principal: 1000,
       } as LoanApplicationDto
 
-      const fineractError: IFineractError = {
+      const expectedError: IFineractError = {
         defaultUserMessage: 'Failed to create loan',
         developerMessage: 'Failed to create loan',
         userMessageGlobalisationCode:
@@ -82,11 +82,11 @@ describe('LoansController', () => {
 
       const response = {
         status: 'error',
-        error: fineractError,
+        error: expectedError,
       }
 
       vi.mocked(service).createLoanApplication.mockRejectedValueOnce(
-        new Error(fineractError.developerMessage, { cause: response }),
+        new Error(expectedError.developerMessage, { cause: response }),
       )
 
       let error: Error
@@ -102,7 +102,7 @@ describe('LoansController', () => {
       const exception = error as unknown as HttpException
 
       expect(exception.getStatus()).toStrictEqual(400)
-      expect(exception.getResponse()).toBe(fineractError)
+      expect(exception.getResponse()).toBe(expectedError)
     })
   })
 
@@ -137,7 +137,7 @@ describe('LoansController', () => {
 
       const loanId = 1
 
-      const fineractError: IFineractError = {
+      const expectedError: IFineractError = {
         defaultUserMessage: 'Failed to create repayment',
         developerMessage: 'Failed to create repayment',
         userMessageGlobalisationCode:
@@ -157,11 +157,11 @@ describe('LoansController', () => {
 
       const response = {
         status: 'error',
-        error: fineractError,
+        error: expectedError,
       }
 
       vi.mocked(service).createRepayment.mockRejectedValueOnce(
-        new Error(fineractError.developerMessage, { cause: response }),
+        new Error(expectedError.developerMessage, { cause: response }),
       )
 
       let error: Error
@@ -176,7 +176,7 @@ describe('LoansController', () => {
       const exception = error as unknown as HttpException
 
       expect(exception.getStatus()).toStrictEqual(400)
-      expect(exception.getResponse()).toBe(fineractError)
+      expect(exception.getResponse()).toBe(expectedError)
     })
   })
 })
