@@ -1,3 +1,4 @@
+import { HttpException } from '@nestjs/common'
 import { Test, TestingModule } from '@nestjs/testing'
 import { LoanApplicationDto } from './dto/loan-application.dto'
 import { RepaymentDto } from './dto/repayment.dto'
@@ -61,7 +62,7 @@ describe('LoansController', () => {
         principal: 1000,
       } as LoanApplicationDto
 
-      const errors: IFineractError = {
+      const fineractError: IFineractError = {
         defaultUserMessage: 'Failed to create loan',
         developerMessage: 'Failed to create loan',
         userMessageGlobalisationCode:
@@ -81,16 +82,27 @@ describe('LoansController', () => {
 
       const response = {
         status: 'error',
-        errors,
+        errors: fineractError,
       }
 
       vi.mocked(service).createLoanApplication.mockRejectedValueOnce(
-        new Error(undefined, { cause: response }),
+        new Error(fineractError.developerMessage, { cause: response }),
       )
 
-      const result = await controller.createLoanApplication(loanApplication)
+      let error: Error
 
-      expect(result).toStrictEqual(response)
+      try {
+        await controller.createLoanApplication(loanApplication)
+      } catch (e) {
+        error = e
+      }
+
+      expect(error).toBeInstanceOf(HttpException)
+
+      const exception = error as unknown as HttpException
+
+      expect(exception.getStatus()).toStrictEqual(400)
+      expect(exception.message).toBe(fineractError.developerMessage)
     })
   })
 
@@ -125,7 +137,7 @@ describe('LoansController', () => {
 
       const loanId = 1
 
-      const errors: IFineractError = {
+      const fineractError: IFineractError = {
         defaultUserMessage: 'Failed to create repayment',
         developerMessage: 'Failed to create repayment',
         userMessageGlobalisationCode:
@@ -145,16 +157,26 @@ describe('LoansController', () => {
 
       const response = {
         status: 'error',
-        errors,
+        errors: fineractError,
       }
 
       vi.mocked(service).createRepayment.mockRejectedValueOnce(
-        new Error(undefined, { cause: response }),
+        new Error(fineractError.developerMessage, { cause: response }),
       )
 
-      const result = await controller.createRepayment(loanId, badRepayment)
+      let error: Error
+      try {
+        await controller.createRepayment(loanId, badRepayment)
+      } catch (e) {
+        error = e
+      }
 
-      expect(result).toStrictEqual(response)
+      expect(error).toBeInstanceOf(HttpException)
+
+      const exception = error as unknown as HttpException
+
+      expect(exception.getStatus()).toStrictEqual(400)
+      expect(exception.message).toBe(fineractError.developerMessage)
     })
   })
 })

@@ -1,4 +1,11 @@
-import { Body, Controller, HttpCode, Param, Post } from '@nestjs/common'
+import {
+  Body,
+  Controller,
+  HttpCode,
+  HttpException,
+  Param,
+  Post,
+} from '@nestjs/common'
 import { LoanApplicationDto } from './dto/loan-application.dto'
 import { RepaymentDto } from './dto/repayment.dto'
 import { LoansService } from './loans.service'
@@ -9,17 +16,28 @@ export class LoansController {
 
   @Post('/')
   @HttpCode(201)
-  createLoanApplication(@Body() data: LoanApplicationDto) {
-    return this.service
-      .createLoanApplication(data)
-      .catch((error) => error.cause)
+  async createLoanApplication(@Body() data: LoanApplicationDto) {
+    try {
+      return await this.service.createLoanApplication(data)
+    } catch (e) {
+      throw new HttpException(e.message, +e.cause.errors.httpStatusCode, {
+        cause: e,
+      })
+    }
   }
 
   @Post('/:loanId/repayments')
   @HttpCode(201)
-  createRepayment(@Param('loanId') loanId: number, @Body() data: RepaymentDto) {
-    return this.service
-      .createRepayment(loanId, data)
-      .catch((error) => error.cause)
+  async createRepayment(
+    @Param('loanId') loanId: number,
+    @Body() data: RepaymentDto,
+  ) {
+    try {
+      return await this.service.createRepayment(loanId, data)
+    } catch (e) {
+      throw new HttpException(e.message, +e.cause.errors.httpStatusCode, {
+        cause: e,
+      })
+    }
   }
 }
