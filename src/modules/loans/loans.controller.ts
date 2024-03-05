@@ -20,7 +20,7 @@ export class LoansController {
     try {
       return await this.service.createLoanApplication(data)
     } catch (e) {
-      throw new HttpException(e.message, +e.cause.errors.httpStatusCode, {
+      throw new HttpException(e.message, +e.cause.error.httpStatusCode, {
         cause: e,
       })
     }
@@ -35,7 +35,7 @@ export class LoansController {
     try {
       return await this.service.createRepayment(loanId, data)
     } catch (e) {
-      throw new HttpException(e.message, +e.cause.errors.httpStatusCode, {
+      throw new HttpException(e.message, +e.cause.error.httpStatusCode, {
         cause: e,
       })
     }

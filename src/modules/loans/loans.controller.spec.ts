@@ -40,11 +40,11 @@ describe('LoansController', () => {
         principal: 1000,
       } as LoanApplicationDto
 
-      const response = { status: 'ok', errors: [] }
+      const response = { status: 'ok', error: null }
 
       vi.mocked(service).createLoanApplication.mockResolvedValue({
         status: 'ok',
-        error: [],
+        error: null,
       })
 
       const result = await controller.createLoanApplication(loanApplication)
@@ -82,7 +82,7 @@ describe('LoansController', () => {
 
       const response = {
         status: 'error',
-        errors: fineractError,
+        error: fineractError,
       }
 
       vi.mocked(service).createLoanApplication.mockRejectedValueOnce(
@@ -119,11 +119,11 @@ describe('LoansController', () => {
       }
 
       const loanId = 1
-      const response = { status: 'ok', errors: [] }
+      const response = { status: 'ok', error: null }
 
       vi.mocked(service).createRepayment.mockResolvedValue({
         status: 'ok',
-        error: [],
+        error: null,
       })
 
       const result = await controller.createRepayment(loanId, repayment)
@@ -157,7 +157,7 @@ describe('LoansController', () => {
 
       const response = {
         status: 'error',
-        errors: fineractError,
+        error: fineractError,
       }
 
       vi.mocked(service).createRepayment.mockRejectedValueOnce(
