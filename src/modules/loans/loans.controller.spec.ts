@@ -84,7 +84,9 @@ describe('LoansController', () => {
         errors,
       }
 
-      vi.mocked(service).createLoanApplication.mockRejectedValueOnce(response)
+      vi.mocked(service).createLoanApplication.mockRejectedValueOnce(
+        new Error(undefined, { cause: response }),
+      )
 
       const result = await controller.createLoanApplication(loanApplication)
 
@@ -146,7 +148,9 @@ describe('LoansController', () => {
         errors,
       }
 
-      vi.mocked(service).createRepayment.mockRejectedValueOnce(response)
+      vi.mocked(service).createRepayment.mockRejectedValueOnce(
+        new Error(undefined, { cause: response }),
+      )
 
       const result = await controller.createRepayment(loanId, badRepayment)
 

@@ -10,12 +10,16 @@ export class LoansController {
   @Post('/')
   @HttpCode(201)
   createLoanApplication(@Body() data: LoanApplicationDto) {
-    return this.service.createLoanApplication(data).catch((error) => error)
+    return this.service
+      .createLoanApplication(data)
+      .catch((error) => error.cause)
   }
 
   @Post('/:loanId/repayments')
   @HttpCode(201)
   createRepayment(@Param('loanId') loanId: number, @Body() data: RepaymentDto) {
-    return this.service.createRepayment(loanId, data).catch((error) => error)
+    return this.service
+      .createRepayment(loanId, data)
+      .catch((error) => error.cause)
   }
 }
