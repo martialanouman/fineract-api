@@ -16,6 +16,10 @@ export class LoansService {
     private httpService: HttpService,
     private config: ConfigService,
   ) {
+    this.init()
+  }
+
+  private init() {
     this.basicAuthToken = Buffer.from(
       `${this.config.get('FINERACT_USERNAME')}:${this.config.get(
         'FINERACT_PASSWORD',
