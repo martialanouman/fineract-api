@@ -14,10 +14,6 @@ const mockFineractUsername = 'fineract'
 const mockFineractPassword = 'password'
 const mockTenantId = 'tenant'
 
-vi.stubEnv('FINERACT_USERNAME', mockFineractUsername)
-vi.stubEnv('FINERACT_PASSWORD', mockFineractPassword)
-vi.stubEnv('FINERACT_TENANT_ID', mockTenantId)
-
 const basicAuthToken = Buffer.from(
   `${mockFineractUsername}:${mockFineractPassword}`,
 ).toString('base64')
@@ -44,6 +40,12 @@ describe('LoansService', () => {
 
   beforeEach(() => {
     vi.clearAllMocks()
+  })
+
+  beforeAll(() => {
+    vi.stubEnv('FINERACT_USERNAME', mockFineractUsername)
+    vi.stubEnv('FINERACT_PASSWORD', mockFineractPassword)
+    vi.stubEnv('FINERACT_TENANT_ID', mockTenantId)
   })
 
   afterAll(() => {
