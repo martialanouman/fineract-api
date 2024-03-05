@@ -1,4 +1,4 @@
-import { IsNumber, IsString } from 'class-validator'
+import { IsNumber, IsOptional, IsString } from 'class-validator'
 import { IRepayment } from '../interfaces/repayment.interface'
 
 export class RepaymentDto implements IRepayment {
@@ -9,12 +9,15 @@ export class RepaymentDto implements IRepayment {
   transactionAmount: number
 
   @IsString()
+  @IsOptional()
   externalId: string
 
   @IsString()
+  @IsOptional()
   paymentTypeId: string
 
   @IsString()
+  @IsOptional()
   note: string
 
   @IsString()
