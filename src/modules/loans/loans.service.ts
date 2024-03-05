@@ -49,7 +49,7 @@ export class LoansService {
 
       return { status: 'ok', errors: [] }
     } catch (error) {
-      throw new Error(error.message, {
+      throw new Error(error.response.data.developerMessage, {
         cause: {
           status: 'error',
           errors: error.response.data.errors,
@@ -76,7 +76,7 @@ export class LoansService {
 
       return { status: 'ok', errors: [] }
     } catch (error) {
-      throw new Error(error.message, {
+      throw new Error(error.response.data.developerMessage, {
         cause: {
           status: 'error',
           errors: error.response.data.errors,

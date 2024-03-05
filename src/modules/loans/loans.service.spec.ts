@@ -137,14 +137,15 @@ describe('LoansService', () => {
       })),
     )
 
-    let result: Error
+    let error: Error
     await service
       .createLoanApplication(badLoanApplication)
-      .catch((error) => (result = error))
+      .catch((e) => (error = e))
 
-    expect(result).toBeInstanceOf(Error)
+    expect(error.message).toBe(errorMessage)
+    expect(error).toBeInstanceOf(Error)
 
-    const cause = result.cause as IFineractResponse
+    const cause = error.cause as IFineractResponse
 
     expect(cause.status).toBe('error')
     expect(cause.errors.length).toBe(1)
@@ -216,12 +217,13 @@ describe('LoansService', () => {
         })),
       )
 
-      let result: Error
-      await service
-        .createRepayment(1, badRepayment)
-        .catch((error) => (result = error))
+      let error: Error
+      await service.createRepayment(1, badRepayment).catch((e) => (error = e))
 
-      const cause = result.cause as IFineractResponse
+      expect(error).toBeInstanceOf(Error)
+      expect(error.message).toBe(errorMessage)
+
+      const cause = error.cause as IFineractResponse
 
       expect(cause.status).toBe('error')
       expect(cause.errors.length).toBe(1)
