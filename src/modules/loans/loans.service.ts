@@ -63,6 +63,12 @@ export class LoansService {
         this.httpService.post(
           `${this.baseURL}/loans/${loanId}/transactions?command=repayment`,
           repayment,
+          {
+            headers: {
+              Authorization: `Basic ${this.basicAuthToken}`,
+              'Fineract-Platform-Tenantid': this.fineractTenantId,
+            },
+          },
         ),
       )
 

@@ -177,7 +177,12 @@ describe('LoansService', () => {
       expect(result.errors.length).toBe(0)
 
       expect(httpService.post).toHaveBeenCalledOnce()
-      expect(httpService.post).toHaveBeenCalledWith(url, repayment)
+      expect(httpService.post).toHaveBeenCalledWith(url, repayment, {
+        headers: {
+          Authorization: `Basic ${basicAuthToken}`,
+          'Fineract-Platform-Tenantid': mockTenantId,
+        },
+      })
     })
 
     it('should return an error message when the repayment fails', async () => {
