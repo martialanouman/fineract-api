@@ -112,35 +112,37 @@ describe('LoansService', () => {
 
     const errorMessage = 'Invalid loan application'
     const statusCode = 400
+    const expectedError = {
+      response: {
+        status: statusCode,
+        data: {
+          httpStatusCode: statusCode,
+          developerMessage: errorMessage,
+          defaultUserMessage: errorMessage,
+          errors: [
+            {
+              developerMessage: 'Loan with externalId is already registered.',
+              defaultUserMessage: 'Loan with externalId is already registered.',
+              userMessageGlobalisationCode:
+                'error.msg.loan.with.externalId.already.used',
+              parameterName: 'id',
+              args: [],
+            },
+          ],
+        },
+      },
+    }
 
     vi.mocked(httpService.post).mockReturnValueOnce(
-      throwError(() => ({
-        response: {
-          status: statusCode,
-          data: {
-            httpStatusCode: statusCode,
-            developerMessage: errorMessage,
-            defaultUserMessage: errorMessage,
-            errors: [
-              {
-                developerMessage: 'Loan with externalId is already registered.',
-                defaultUserMessage:
-                  'Loan with externalId is already registered.',
-                userMessageGlobalisationCode:
-                  'error.msg.loan.with.externalId.already.used',
-                parameterName: 'id',
-                args: [],
-              },
-            ],
-          },
-        },
-      })),
+      throwError(() => expectedError),
     )
 
     let error: Error
-    await service
-      .createLoanApplication(badLoanApplication)
-      .catch((e) => (error = e))
+    try {
+      await service.createLoanApplication(badLoanApplication)
+    } catch (e) {
+      error = e
+    }
 
     expect(error.message).toBe(errorMessage)
     expect(error).toBeInstanceOf(Error)
