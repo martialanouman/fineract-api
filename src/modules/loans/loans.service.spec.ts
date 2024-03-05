@@ -8,7 +8,17 @@ import { type ILoanApplication } from './interfaces/loan-application.interface'
 import { IRepayment } from './interfaces/repayment.interface'
 import { LoansService } from './loans.service'
 
-vi.mock('@nestjs/axios')
+vi.mock('@nestjs/axios', () => {
+  const HttpService = vi.fn()
+  HttpService.prototype.post = vi.fn()
+  HttpService.prototype.axiosRef = {
+    defaults: {
+      httpsAgent: null,
+    },
+  }
+
+  return { HttpService }
+})
 
 const mockFineractUsername = 'fineract'
 const mockFineractPassword = 'password'
@@ -24,15 +34,8 @@ describe('LoansService', () => {
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [LoansService, ConfigService],
-    })
-      .useMocker((token) => {
-        if (token === HttpService) {
-          const MockHttpService = vi.mocked(HttpService)
-          return new MockHttpService()
-        }
-      })
-      .compile()
+      providers: [LoansService, ConfigService, HttpService],
+    }).compile()
 
     service = module.get<LoansService>(LoansService)
     httpService = module.get<HttpService>(HttpService)

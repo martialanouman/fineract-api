@@ -1,6 +1,7 @@
 import { HttpService } from '@nestjs/axios'
 import { Injectable } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
+import https from 'https'
 import { lastValueFrom } from 'rxjs'
 import { type IFineractResponse } from './interfaces/fineract-response.interface'
 import { type ILoanApplication } from './interfaces/loan-application.interface'
@@ -15,7 +16,11 @@ export class LoansService {
   constructor(
     private httpService: HttpService,
     private config: ConfigService,
-  ) {}
+  ) {
+    this.httpService.axiosRef.defaults.httpsAgent = new https.Agent({
+      rejectUnauthorized: false,
+    })
+  }
 
   private getHeaders() {
     this.basicAuthToken = Buffer.from(
