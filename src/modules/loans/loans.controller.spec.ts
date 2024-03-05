@@ -102,7 +102,7 @@ describe('LoansController', () => {
       const exception = error as unknown as HttpException
 
       expect(exception.getStatus()).toStrictEqual(400)
-      expect(exception.message).toBe(fineractError.developerMessage)
+      expect(exception.getResponse()).toBe(fineractError)
     })
   })
 
@@ -176,7 +176,7 @@ describe('LoansController', () => {
       const exception = error as unknown as HttpException
 
       expect(exception.getStatus()).toStrictEqual(400)
-      expect(exception.message).toBe(fineractError.developerMessage)
+      expect(exception.getResponse()).toBe(fineractError)
     })
   })
 })
