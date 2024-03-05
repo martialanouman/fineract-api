@@ -1,4 +1,5 @@
 import { HttpService } from '@nestjs/axios'
+import { ConfigService } from '@nestjs/config'
 import { Test, TestingModule } from '@nestjs/testing'
 import { type AxiosResponse } from 'axios'
 import { of, throwError } from 'rxjs'
@@ -9,13 +10,25 @@ import { LoansService } from './loans.service'
 
 vi.mock('@nestjs/axios')
 
+const mockFineractUsername = 'fineract'
+const mockFineractPassword = 'password'
+const mockTenantId = 'tenant'
+
+vi.stubEnv('FINERACT_USERNAME', mockFineractUsername)
+vi.stubEnv('FINERACT_PASSWORD', mockFineractPassword)
+vi.stubEnv('FINERACT_TENANT_ID', mockTenantId)
+
+const basicAuthToken = Buffer.from(
+  `${mockFineractUsername}:${mockFineractPassword}`,
+).toString('base64')
+
 describe('LoansService', () => {
   let service: LoansService
   let httpService: HttpService
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [LoansService],
+      providers: [LoansService, ConfigService],
     })
       .useMocker((token) => {
         if (token === HttpService) {
@@ -27,6 +40,14 @@ describe('LoansService', () => {
 
     service = module.get<LoansService>(LoansService)
     httpService = module.get<HttpService>(HttpService)
+  })
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
+  afterAll(() => {
+    vi.unstubAllEnvs()
   })
 
   it('should be defined', () => {
@@ -72,7 +93,12 @@ describe('LoansService', () => {
       expect(result.errors.length).toBe(0)
 
       expect(httpService.post).toHaveBeenCalledOnce()
-      expect(httpService.post).toHaveBeenCalledWith(url, loanApplication)
+      expect(httpService.post).toHaveBeenCalledWith(url, loanApplication, {
+        headers: {
+          Authorization: `Basic ${basicAuthToken}`,
+          'Fineract-Platform-Tenantid': mockTenantId,
+        },
+      })
     })
   })
 
