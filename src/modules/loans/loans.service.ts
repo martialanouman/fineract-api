@@ -47,12 +47,12 @@ export class LoansService {
         }),
       )
 
-      return { status: 'ok', errors: [] }
+      return { status: 'ok', error: null }
     } catch (error) {
       throw new Error(error.response.data.developerMessage, {
         cause: {
           status: 'error',
-          errors: error.response.data.errors,
+          error: error.response.data,
           statusCode: error.response.data.httpStatusCode,
         },
       })
@@ -74,12 +74,12 @@ export class LoansService {
         ),
       )
 
-      return { status: 'ok', errors: [] }
+      return { status: 'ok', error: null }
     } catch (error) {
       throw new Error(error.response.data.developerMessage, {
         cause: {
           status: 'error',
-          errors: error.response.data.errors,
+          error: error.response.data,
           statusCode: error.response.data.httpStatusCode,
         },
       })

@@ -44,7 +44,7 @@ describe('LoansController', () => {
 
       vi.mocked(service).createLoanApplication.mockResolvedValue({
         status: 'ok',
-        errors: [],
+        error: [],
       })
 
       const result = await controller.createLoanApplication(loanApplication)
@@ -123,7 +123,7 @@ describe('LoansController', () => {
 
       vi.mocked(service).createRepayment.mockResolvedValue({
         status: 'ok',
-        errors: [],
+        error: [],
       })
 
       const result = await controller.createRepayment(loanId, repayment)

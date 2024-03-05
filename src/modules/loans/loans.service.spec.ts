@@ -95,7 +95,7 @@ describe('LoansService', () => {
       const result = await service.createLoanApplication(loanApplication)
 
       expect(result.status).toBe('ok')
-      expect(result.errors.length).toBe(0)
+      expect(result.error).toBeNull()
 
       expect(httpService.post).toHaveBeenCalledOnce()
       expect(httpService.post).toHaveBeenCalledWith(url, loanApplication, {
@@ -148,7 +148,7 @@ describe('LoansService', () => {
     const cause = error.cause as IFineractResponse
 
     expect(cause.status).toBe('error')
-    expect(cause.errors.length).toBe(1)
+    expect(cause.error.errors.length).toBe(1)
     expect(cause.statusCode).toBe(statusCode)
   })
 
@@ -178,7 +178,7 @@ describe('LoansService', () => {
       const result = await service.createRepayment(1, repayment)
 
       expect(result.status).toBe('ok')
-      expect(result.errors.length).toBe(0)
+      expect(result.error).toBeNull()
 
       expect(httpService.post).toHaveBeenCalledOnce()
       expect(httpService.post).toHaveBeenCalledWith(url, repayment, {
@@ -218,7 +218,12 @@ describe('LoansService', () => {
       )
 
       let error: Error
-      await service.createRepayment(1, badRepayment).catch((e) => (error = e))
+
+      try {
+        await service.createRepayment(1, badRepayment)
+      } catch (e) {
+        error = e
+      }
 
       expect(error).toBeInstanceOf(Error)
       expect(error.message).toBe(errorMessage)
@@ -226,7 +231,7 @@ describe('LoansService', () => {
       const cause = error.cause as IFineractResponse
 
       expect(cause.status).toBe('error')
-      expect(cause.errors.length).toBe(1)
+      expect(cause.error.errors.length).toBe(1)
       expect(cause.statusCode).toBe(statusCode)
     })
   })
