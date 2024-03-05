@@ -15,11 +15,9 @@ export class LoansService {
   constructor(
     private httpService: HttpService,
     private config: ConfigService,
-  ) {
-    this.init()
-  }
+  ) {}
 
-  private init() {
+  private getHeaders() {
     this.basicAuthToken = Buffer.from(
       `${this.config.get('FINERACT_USERNAME')}:${this.config.get(
         'FINERACT_PASSWORD',
@@ -27,6 +25,11 @@ export class LoansService {
     ).toString('base64')
 
     this.fineractTenantId = this.config.get('FINERACT_TENANT_ID')
+
+    return {
+      Authorization: `Basic ${this.basicAuthToken}`,
+      'Fineract-Platform-Tenantid': this.fineractTenantId,
+    }
   }
 
   async createLoanApplication(
@@ -35,10 +38,7 @@ export class LoansService {
     try {
       await lastValueFrom(
         this.httpService.post(`${this.baseURL}/loans`, application, {
-          headers: {
-            Authorization: `Basic ${this.basicAuthToken}`,
-            'Fineract-Platform-Tenantid': this.fineractTenantId,
-          },
+          headers: this.getHeaders(),
         }),
       )
 
@@ -64,10 +64,7 @@ export class LoansService {
           `${this.baseURL}/loans/${loanId}/transactions?command=repayment`,
           repayment,
           {
-            headers: {
-              Authorization: `Basic ${this.basicAuthToken}`,
-              'Fineract-Platform-Tenantid': this.fineractTenantId,
-            },
+            headers: this.getHeaders(),
           },
         ),
       )
